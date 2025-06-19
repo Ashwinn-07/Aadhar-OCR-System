@@ -1,8 +1,10 @@
+import FileUploader from "./components/FileUploader";
+
 const App = () => {
   return (
-    <div>
-      <h1>Hellooo</h1>
-    </div>
+    <>
+      <FileUploader />
+    </>
   );
 };
 
