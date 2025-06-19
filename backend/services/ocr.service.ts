@@ -6,16 +6,17 @@ let worker: Awaited<ReturnType<typeof createWorker>>;
 
 export async function initOcrWorker() {
   worker = await createWorker();
-  await worker.load();
-  await (worker as any).loadLanguage("eng");
-  await (worker as any).initialize("eng");
-  await worker.setParameters({ tessedit_pageseg_mode: PSM.SINGLE_BLOCK });
+  await worker.reinitialize("eng");
+  await worker.setParameters({
+    tessedit_pageseg_mode: PSM.SINGLE_BLOCK,
+  });
 }
 
 export async function recognizeImage(url: string): Promise<RawOcrResult> {
   const { data } = await axios.get<ArrayBuffer>(url, {
     responseType: "arraybuffer",
   });
+
   const res = await worker.recognize(Buffer.from(data));
   return { text: res.data.text };
 }
