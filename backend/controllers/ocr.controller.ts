@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { recognizeImage } from "../services/ocr.service";
 import { parseAadhaar } from "../services/parser.service";
 import { RawOcrResult, AadhaarData } from "../types/ocr.type";
+import { STATUS_CODES } from "../utils/constants";
 
 export async function uploadAndOcr(
   req: Request,
@@ -20,7 +21,7 @@ export async function uploadAndOcr(
     const combined = `${fRes.text}\n${bRes.text}`;
     const parsed: AadhaarData = parseAadhaar(combined);
 
-    res.json(parsed);
+    res.status(STATUS_CODES.OK).json(parsed);
   } catch (err) {
     next(err);
   }
