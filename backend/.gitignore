@@ -22,3 +22,5 @@ log/
 *.sublime-workspace
 .DS_Store
 Thumbs.db
+
+/eng.traineddata
