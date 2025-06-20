@@ -6,9 +6,11 @@ let worker: Awaited<ReturnType<typeof createWorker>>;
 
 export async function initOcrWorker() {
   worker = await createWorker();
-  await worker.reinitialize("eng");
+  await worker.reinitialize("eng", 1);
   await worker.setParameters({
-    tessedit_pageseg_mode: PSM.SINGLE_BLOCK,
+    tessedit_pageseg_mode: PSM.AUTO,
+    tessedit_char_whitelist:
+      "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz /:-.,",
   });
 }
 
@@ -17,7 +19,9 @@ export async function recognizeImage(url: string): Promise<RawOcrResult> {
     responseType: "arraybuffer",
   });
 
-  const res = await worker.recognize(Buffer.from(data));
+  const res = await worker.recognize(Buffer.from(data), {
+    rectangle: undefined,
+  });
   return { text: res.data.text };
 }
 
