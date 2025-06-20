@@ -50,14 +50,14 @@ const FileUploader = () => {
             <img
               src={preview}
               alt={`${type} preview`}
-              className="w-full h-48 object-cover rounded-xl"
+              className="max-h-full max-w-full object-contain rounded-xl "
               onLoad={() => console.log(`${type} image loaded successfully`)}
               onError={(e) => {
                 console.error(`Error loading ${type} image:`, e);
                 console.log(`Image src: ${preview}`);
               }}
             />
-            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 rounded-xl flex items-center justify-center">
+            <div className="absolute bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 rounded-xl flex items-center justify-center">
               <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="bg-white rounded-full p-2 shadow-lg">
                   <Upload className="w-5 h-5 text-gray-600" />
