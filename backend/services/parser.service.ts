@@ -43,17 +43,45 @@ export function parseAadhaar(rawText: string): AadhaarData {
 
     data.address = addressLines.join(", ");
     if (data.address) {
-      data.address = data.address
-        .replace(/Address\s*:?/i, "")
-        .replace(/S\/?O\s+[A-Za-z ]+/i, "")
-        .replace(/udr.*?Ris/i, "")
-        .replace(/\b(Brom|uc|fersR?)\b/gi, "")
-        .replace(/\d{4}\s+\d{4}\s+\d{4}/g, "")
-        .replace(/[^a-zA-Z0-9, \-]/g, "")
+      const garbageWords = [
+        "udr",
+        "ris",
+        "fers",
+        "brom",
+        "uc",
+        "fersr",
+        "3lidatst",
+        "anefty",
+        "Address",
+        "S/O",
+        "S\\O",
+        "D/O",
+        "W/O",
+      ];
+
+      let cleanAddress = data.address;
+
+      for (const word of garbageWords) {
+        const regex = new RegExp(`\\b${word}\\b`, "gi");
+        cleanAddress = cleanAddress.replace(regex, "");
+      }
+
+      cleanAddress = cleanAddress.replace(/\d{4}\s+\d{4}\s+\d{4}/g, "");
+
+      cleanAddress = cleanAddress
+        .replace(/[^a-zA-Z0-9,\-\/ ]/g, "")
         .replace(/\s{2,}/g, " ")
         .replace(/,+/g, ",")
+        .replace(/\s*,\s*/g, ", ")
         .replace(/^,|,$/g, "")
         .trim();
+
+      const parts = cleanAddress.split(",").map((p: any) => p.trim());
+      const filteredParts = parts.filter((part: any, index: any) => {
+        return index > 0 || part.length > 6;
+      });
+
+      data.address = filteredParts.join(", ");
     }
   }
 
