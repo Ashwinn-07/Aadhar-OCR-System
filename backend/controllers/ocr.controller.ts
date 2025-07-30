@@ -19,9 +19,15 @@ export async function uploadAndOcr(
     ]);
 
     const combined = `${fRes.text}\n${bRes.text}`;
-    const parsed: AadhaarData = parseAadhaar(combined);
 
-    res.status(STATUS_CODES.OK).json(parsed);
+    try {
+      const parsed: AadhaarData = parseAadhaar(combined);
+      res.status(STATUS_CODES.OK).json(parsed);
+    } catch (validationError: any) {
+      res.status(STATUS_CODES.BAD_REQUEST).json({
+        error: validationError.message,
+      });
+    }
   } catch (err) {
     next(err);
   }

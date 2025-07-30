@@ -1,6 +1,45 @@
 import { AadhaarData } from "../types/ocr.type";
 
+function validateAadhaarContent(rawText: string): boolean {
+  const text = rawText.toLowerCase();
+
+  const aadhaarIndicators = [
+    "aadhaar",
+    "aadhar",
+    "government of india",
+    "unique identification authority",
+    "uidai",
+    "enrollment no",
+    "enrolment no",
+  ];
+
+  const hasAadhaarKeyword = aadhaarIndicators.some((indicator) =>
+    text.includes(indicator)
+  );
+
+  const hasAadhaarNumber = /\d{4}[\s-]?\d{4}[\s-]?\d{4}/.test(rawText);
+
+  const hasDatePattern = /\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}/.test(rawText);
+
+  const hasGender = /\b(male|female|transgender)\b/i.test(rawText);
+
+  const indicators = [
+    hasAadhaarKeyword,
+    hasAadhaarNumber,
+    hasDatePattern,
+    hasGender,
+  ];
+
+  return indicators.filter(Boolean).length >= 2;
+}
+
 export function parseAadhaar(rawText: string): AadhaarData {
+  if (!validateAadhaarContent(rawText)) {
+    throw new Error(
+      "The uploaded image does not appear to be a valid Aadhaar card. Please upload clear images of your Aadhaar card front and back sides."
+    );
+  }
+
   const lines = rawText
     .split(/\r?\n/)
     .map((l) => l.trim())
@@ -25,7 +64,7 @@ export function parseAadhaar(rawText: string): AadhaarData {
     match && (data.gender = match[0].toLowerCase());
   }
 
-  const uid = lines.find((l) => /\d{4}\s*\d{4}\s*\d{4}/.test(l));
+  const uid = lines.find((l) => /\d{4}\s\d{4}\s\d{4}/.test(l));
   uid && (data.aadhaarNumber = uid.replace(/\s+/g, ""));
 
   const pincodeLineIndex = lines.findIndex((l) => /\b\d{6}\b/.test(l));
@@ -37,7 +76,7 @@ export function parseAadhaar(rawText: string): AadhaarData {
       .filter(
         (line) =>
           !/\d{4}\s+\d{4}\s+\d{4}/.test(line) &&
-          !/^\s*[a-z]{1,3}\s*$/i.test(line) &&
+          !/^\s[a-z]{1,3}\s$/i.test(line) &&
           !line.toLowerCase().includes("fers")
       );
 
@@ -72,7 +111,7 @@ export function parseAadhaar(rawText: string): AadhaarData {
         .replace(/[^a-zA-Z0-9,\-\/ ]/g, "")
         .replace(/\s{2,}/g, " ")
         .replace(/,+/g, ",")
-        .replace(/\s*,\s*/g, ", ")
+        .replace(/\s,\s/g, ", ")
         .replace(/^,|,$/g, "")
         .trim();
 
