@@ -40,11 +40,29 @@ export function useOCR() {
     }
   }
 
+  function clearAll() {
+    if (previewFront) {
+      URL.revokeObjectURL(previewFront);
+    }
+    if (previewBack) {
+      URL.revokeObjectURL(previewBack);
+    }
+
+    setFront(null);
+    setBack(null);
+    setPreviewFront(undefined);
+    setPreviewBack(undefined);
+    setData(null);
+    setError(undefined);
+    setLoading(false);
+  }
+
   return {
     previewFront,
     previewBack,
     handleFile,
     runOCR,
+    clearAll,
     data,
     loading,
     error,

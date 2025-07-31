@@ -5,6 +5,7 @@ import {
   CheckCircle,
   AlertCircle,
   CreditCard,
+  RotateCcw,
 } from "lucide-react";
 
 const FileUploader = () => {
@@ -13,6 +14,7 @@ const FileUploader = () => {
     previewBack,
     handleFile,
     runOCR,
+    clearAll,
     data,
     loading,
     error,
@@ -135,7 +137,7 @@ const FileUploader = () => {
             </div>
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-4">
             <button
               onClick={runOCR}
               disabled={loading || !previewFront || !previewBack}
@@ -161,6 +163,25 @@ const FileUploader = () => {
                 </>
               )}
             </button>
+
+            {(previewFront || previewBack || data || error) && (
+              <button
+                onClick={clearAll}
+                disabled={loading}
+                className={`
+                  group relative px-6 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 
+                  flex items-center space-x-3 justify-center cursor-pointer
+                  ${
+                    loading
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : "bg-gray-600 text-white hover:bg-gray-700 hover:shadow-lg hover:scale-105 active:scale-95"
+                  }
+                `}
+              >
+                <RotateCcw className="w-5 h-5" />
+                <span>Clear All</span>
+              </button>
+            )}
           </div>
         </div>
 
